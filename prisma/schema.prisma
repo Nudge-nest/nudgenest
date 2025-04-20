@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Merchants {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  shopId       String   @unique
+  domains      String
+  currencyCode String
+  email        String   @unique
+  name         String   @unique
+  businessInfo String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  address      Address
+
+  @@map("merchants")
+}
+
+model Reviews {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  merchantId     String
+  customer_email String
+  customer_phone String
+  items          Json
+  result         Json?
+  status         String   @default("Pending")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("reviews")
+}
+
+type Address {
+  address1  String
+  address2  String
+  city      String
+  country   String
+  formatted Json
+  zip       String
+}
+
+type Business {
+  businessId       String
+  address          Address[]
+  billingAddress   Address[]
+  plan             String
+  shopDescription  String
+  addressIsBilling Boolean
+  contactEmail     String
+}
