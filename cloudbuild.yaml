@@ -13,10 +13,10 @@ steps:
       id: 'build'
       secretEnv:
           - 'PORT=$BACKEND_PORT'
-          - 'RABBITMQ_URL_AWS=BACKEND_RABBITMQ_URL_AWS'
-          - 'SENDGRID_API_KEY=BACKEND_SENDGRID_API_KEY'
-          - 'DATABASE_URL=BACKEND_DATABASE_URL'
-          - 'GOOGLE_APP_PASSWORD=BACKEND_GOOGLE_APP_PASSWORD'
+          - 'RABBITMQ_URL_AWS=$BACKEND_RABBITMQ_URL_AWS'
+          - 'SENDGRID_API_KEY=$BACKEND_SENDGRID_API_KEY'
+          - 'DATABASE_URL=$BACKEND_DATABASE_URL'
+          - 'GOOGLE_APP_PASSWORD=$BACKEND_GOOGLE_APP_PASSWORD'
 
     # -------------------- Push to google repo ---------------------------------
     - name: gcr.io/cloud-builders/docker
