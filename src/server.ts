@@ -18,7 +18,7 @@ let server: Server;
 
 const init = async () => {
     server = Hapi.server({
-        port: process.env.PORT || 50001,
+        port: process.env.PORT || 8080,
         host: '0.0.0.0',
         debug: false,
         routes: {
