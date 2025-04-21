@@ -32,7 +32,7 @@ COPY --from=builder /app/node_modules ./node_modules
 ENV FILE_ENCODING=utf8
 
 # Port exposed by your app
-EXPOSE 50001
+EXPOSE 8080
 
 # Start the app
 CMD ["yarn", "start"]
