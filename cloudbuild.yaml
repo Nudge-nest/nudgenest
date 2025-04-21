@@ -12,7 +12,6 @@ steps:
           - Dockerfile
       id: 'build'
       secretEnv:
-          - 'PORT'
           - 'RABBITMQ_URL_AWS'
           - 'SENDGRID_API_KEY'
           - 'DATABASE_URL'
@@ -57,8 +56,6 @@ tags:
 
 availableSecrets:
     secretManager:
-        - versionName: 'projects/$PROJECT_ID/secrets/PORT/versions/1'
-          env: 'PORT'
         - versionName: 'projects/$PROJECT_ID/secrets/RABBITMQ_URL_AWS/versions/1'
           env: 'RABBITMQ_URL_AWS'
         - versionName: 'projects/$PROJECT_ID/secrets/SENDGRID_API_KEY/versions/1'
