@@ -12,11 +12,11 @@ steps:
           - Dockerfile
       id: 'build'
       secretEnv:
-          - 'PORT=$BACKEND_PORT'
-          - 'RABBITMQ_URL_AWS=$BACKEND_RABBITMQ_URL_AWS'
-          - 'SENDGRID_API_KEY=$BACKEND_SENDGRID_API_KEY'
-          - 'DATABASE_URL=$BACKEND_DATABASE_URL'
-          - 'GOOGLE_APP_PASSWORD=$BACKEND_GOOGLE_APP_PASSWORD'
+          - 'PORT'
+          - 'RABBITMQ_URL_AWS'
+          - 'SENDGRID_API_KEY'
+          - 'DATABASE_URL'
+          - 'GOOGLE_APP_PASSWORD'
 
     # -------------------- Push to google repo ---------------------------------
     - name: gcr.io/cloud-builders/docker
@@ -58,13 +58,13 @@ tags:
 availableSecrets:
     secretManager:
         - versionName: 'projects/$PROJECT_ID/secrets/VERSION/versions/1'
-          env: 'BACKEND_PORT'
+          env: 'PORT'
         - versionName: 'projects/$PROJECT_ID/secrets/SERVICE_NAME/versions/1'
-          env: 'BACKEND_RABBITMQ_URL_AWS'
+          env: 'RABBITMQ_URL_AWS'
         - versionName: 'projects/$PROJECT_ID/secrets/DB_CONNECTION_STRING/versions/1'
-          env: 'BACKEND_SENDGRID_API_KEY'
+          env: 'SENDGRID_API_KEY'
         - versionName: 'projects/$PROJECT_ID/secrets/TEST_DB_CONNECTION_STRING/versions/1'
-          env: 'BACKEND_DATABASE_URL'
+          env: 'DATABASE_URL'
         - versionName: 'projects/$PROJECT_ID/secrets/FIREBASE_APIKEY/versions/1'
-          env: 'BACKEND_GOOGLE_APP_PASSWORD'
+          env: 'GOOGLE_APP_PASSWORD'
 # [END cloudbuild_quickstart_build]
