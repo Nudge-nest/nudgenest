@@ -1,0 +1,13 @@
+node_modules
+Dockerfile
+.dockerignore
+yarn-error.log
+.idea/
+.vscode/
+.env
+build/
+*.test.*
+__tests__/
+coverage/
+cloudbuild.yaml
+README.md
