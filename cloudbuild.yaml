@@ -39,7 +39,6 @@ steps:
           - '--quiet'
       id: Deploy
       secretEnv:
-        - '$_PORT'
         - 'RABBITMQ_URL_AWS'
         - 'SENDGRID_API_KEY'
         - 'DATABASE_URL'
