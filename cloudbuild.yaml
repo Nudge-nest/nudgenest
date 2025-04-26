@@ -27,22 +27,24 @@ steps:
     # -------------------- Deploy ---------------------------------
     - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
       args:
-        - run
+          - run
           - services
           - update
           - nudgenest-backend
           - '--platform=managed'
           - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/nudgenest-backend-service/nudgenest-backend-service:$COMMIT_SHA'
+          - '--labels=managed-by=gcp-cloud-build-deploy-cloud-run,commit-sha=$COMMIT_SHA,gcb-build-id=$BUILD_ID,gcb-trigger-id=$_TRIGGER_ID,$_LABELS'
           - '--region=$_DEPLOY_REGION'
           - '--quiet'
+          - '--allow-unauthenticated'
           - '--update-secrets'
-          - 'RABBITMQ_URL_AWS=projects/$PROJECT_ID/secrets/RABBITMQ_URL_AWS:latest'
+          - 'RABBITMQ_URL_AWS=projects/1094805904049/secrets/RABBITMQ_URL_AWS:latest'
           - '--update-secrets'
-          - 'SENDGRID_API_KEY=projects/$PROJECT_ID/secrets/SENDGRID_API_KEY:latest'
+          - 'SENDGRID_API_KEY=projects/1094805904049/secrets/SENDGRID_API_KEY:latest'
           - '--update-secrets'
-          - 'DATABASE_URL=projects/$PROJECT_ID/secrets/DATABASE_URL:latest'
+          - 'DATABASE_URL=projects/1094805904049/secrets/DATABASE_URL:latest'
           - '--update-secrets'
-          - 'GOOGLE_APP_PASSWORD=projects/$PROJECT_ID/secrets/GOOGLE_APP_PASSWORD:latest'
+          - 'GOOGLE_APP_PASSWORD=projects/1094805904049/secrets/GOOGLE_APP_PASSWORD:latest'
       id: Deploy
       secretEnv:
         - 'RABBITMQ_URL_AWS'
