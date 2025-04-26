@@ -30,7 +30,7 @@ steps:
           - run
           - services
           - update
-          - note-app-react
+          - nudgenest-backend
           - '--platform=managed'
           - '--image=$LOCATION-docker.pkg.dev/$PROJECT_ID/nudgenest-backend-service/nudgenest-backend-service:$COMMIT_SHA'
           - >-
