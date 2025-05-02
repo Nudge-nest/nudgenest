@@ -7,8 +7,6 @@ import shopifyWebhookPlugin from './plugins/shopifyWebhook';
 import sendReviewMessagePlugin from './plugins/sendReviewMessagePlugin';
 import shopifyReviewRequestListenerPlugin from './plugins/shopifyReviewRequestListener';
 import prismaPlugin from './plugins/prisma';
-import nodeMailerPlugin from './plugins/nodemailer';
-import sendGridPlugin from './plugins/sendgrid';
 import merchantsPlugin from './plugins/merchant';
 import reviewsPlugin from './plugins/review';
 
@@ -34,8 +32,6 @@ const init = async () => {
     await server.register([
         prismaPlugin,
         rabbitPlugin,
-        sendGridPlugin,
-        nodeMailerPlugin,
         shopifyWebhookPlugin,
         merchantsPlugin,
         reviewsPlugin,

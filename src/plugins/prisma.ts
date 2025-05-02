@@ -10,7 +10,7 @@ declare module '@hapi/hapi' {
 const prismaPlugin: Hapi.Plugin<null> = {
     name: 'prisma',
     register: async (server: Hapi.Server) => {
-        server.app.prisma = new PrismaClient({ log: ['query', 'info', 'warn', 'error'] });
+        server.app.prisma = new PrismaClient({ log: ['error'] });
         console.log("['info'] Prisma client initialized");
         server.ext({
             type: 'onPostStop',

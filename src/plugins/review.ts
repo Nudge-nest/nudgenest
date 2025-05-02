@@ -55,7 +55,6 @@ const getReviewById = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => 
                 updatedAt: true,
             },
         });
-        console.log('Get review', review);
         return h.response({ version: '1.0.0', data: review }).code(200);
     } catch (error: any) {
         return h
@@ -79,7 +78,6 @@ const updateReviewById = async (request: Hapi.Request, h: Hapi.ResponseToolkit) 
             },
             data: { ...reviewUpdate },
         });
-        console.log('update review', updatedReview);
         return h.response({ version: '1.0.0', data: updatedReview }).code(200);
     } catch (error: any) {
         return h
