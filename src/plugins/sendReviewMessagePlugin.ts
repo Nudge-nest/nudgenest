@@ -3,7 +3,6 @@ import * as dotenv from 'dotenv';
 import { messagingQueue } from './nudgeEventBus';
 import { IRabbitDataObject, IReviewMessagePayloadContent } from '../types';
 import sgMail from '@sendgrid/mail';
-import nodeMailer from 'nodemailer';
 
 dotenv.config();
 
@@ -30,36 +29,10 @@ const sendEmail = async (email: any) => {
     return sgMail.send(email);
 };
 
-const sendEmailNodemailer = async (email: any) => {
-    const sendGridApiKey = process.env.SENDGRID_API_KEY;
-
-    if (!sendGridApiKey) {
-        throw Error('No Api key found');
-    }
-    const transporter = nodeMailer.createTransport({
-        host: 'smtp.sendgrid.net',
-        port: 465,
-        secure: true,
-        auth: {
-            user: 'apikey',
-            pass: sendGridApiKey,
-        },
-        tls: {
-            // do not fail on invalid certs
-            rejectUnauthorized: false,
-        },
-        //debug: true, // Enable debugging
-        //logger: true, // Log SMTP connections
-    });
-    return transporter.sendMail(email);
-};
-
 const sendReviewMessagePlugin: Hapi.Plugin<null> = {
     name: 'reviewMessage',
     register: async (server: Hapi.Server) => {
         const { messagingChannel } = server.app.rabbit;
-        const { sendMail } = server.app.nodeMailer;
-        const { send } = server.app.sendGrid;
 
         await messagingChannel.consume(messagingQueue, async (msg: any) => {
             if (msg) {
