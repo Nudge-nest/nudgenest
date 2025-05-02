@@ -36,7 +36,6 @@ const buildPublishJson = (
 const publishToReviewExchange = (channel: any, publishJson: any) => {
     const publishBuffer = Buffer.from(JSON.stringify(publishJson));
     channel.publish(shopifyReviewRequestExchange, '', publishBuffer);
-    console.log("['info'] Published new shopify review request", publishJson);
 };
 
 declare module '@hapi/hapi' {

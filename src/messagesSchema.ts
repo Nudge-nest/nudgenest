@@ -41,7 +41,6 @@ const schema = {
 export const isRabbitReviewRequestMessageValid = (message: IRabbitDataObject<IReviewMessagePayloadContent>) => {
     // @ts-ignore
     const result = validator.validate(message, schema);
-    console.log('Verifying review message', result);
     return result.errors.length === 0;
 };
 

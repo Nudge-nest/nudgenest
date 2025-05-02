@@ -46,10 +46,10 @@ steps:
           - 'GOOGLE_APP_PASSWORD=projects/1094805904049/secrets/GOOGLE_APP_PASSWORD:latest'
       id: Deploy
       secretEnv:
-        - 'RABBITMQ_URL_AWS'
-        - 'SENDGRID_API_KEY'
-        - 'DATABASE_URL'
-        - 'GOOGLE_APP_PASSWORD'
+          - 'RABBITMQ_URL_AWS'
+          - 'SENDGRID_API_KEY'
+          - 'DATABASE_URL'
+          - 'GOOGLE_APP_PASSWORD'
       entrypoint: gcloud
       waitFor: ['push']
 images:
