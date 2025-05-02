@@ -22,8 +22,8 @@ const createNewReview = async (prisma: any, shopifyMessage: any) => {
         const newReview = await prisma.reviews.create({
             data: {
                 merchantId: merchant_business_entity_id,
-                customer_phone: customer.phone || '',
-                customer_email: customer.email,
+                customerPhone: customer.phone || '',
+                customerEmail: customer.email,
                 items: line_items,
             },
         });
