@@ -102,9 +102,9 @@ const updateReviewById = async (request: Hapi.Request, h: Hapi.ResponseToolkit) 
 const listReviewsByMerchantId = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
     const { shopid } = request.query as any;
     const { prisma } = request.server.app;
+    if (!shopid) return;
     console.log("['info'] listReviewsByMerchantId", shopid);
     try {
-        if (!shopid) throw new Error('Missing merchantid');
         const reviews = await prisma.reviews.findMany({
             where: {
                 shopId: shopid as string,
