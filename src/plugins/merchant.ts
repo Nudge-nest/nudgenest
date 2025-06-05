@@ -40,9 +40,11 @@ const verifyMerchantHandler = async (request: Hapi.Request, h: Hapi.ResponseTool
     const { merchantId } = request.params;
     const { prisma } = request.server.app;
     try {
-        const merchant = await prisma.merchants.findUnique({
+        const merchant = await prisma.merchants.findMany({
             where: {
-                shopId: merchantId as string,
+                shopId: {
+                    contains: merchantId as string
+                }
             },
             select: {
                 // Explicitly select fields (excludes otpSecret)
