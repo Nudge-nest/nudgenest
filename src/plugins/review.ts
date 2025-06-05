@@ -32,6 +32,14 @@ const reviewsPlugin: Hapi.Plugin<null> = {
                     auth: false,
                 },
             },
+            {
+                method: 'GET',
+                path: '/api/v1/reviews/list',
+                handler: listReviewsByMerchantId,
+                options: {
+                    auth: false,
+                },
+            },
         ]);
     },
 };
@@ -79,6 +87,41 @@ const updateReviewById = async (request: Hapi.Request, h: Hapi.ResponseToolkit) 
             data: { ...reviewUpdate },
         });
         return h.response({ version: '1.0.0', data: updatedReview }).code(200);
+    } catch (error: any) {
+        return h
+            .response({
+                version: '1.0.0',
+                error: error.message,
+            })
+            .code(500);
+    }
+};
+
+//test merchant id MTY3NTgwMjk3MzU0
+
+const listReviewsByMerchantId = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
+    const { shopid } = request.query as any;
+    const { prisma } = request.server.app;
+    console.log("['info'] listReviewsByMerchantId", shopid);
+    try {
+        if (!shopid) throw new Error('Missing merchantid');
+        const reviews = await prisma.reviews.findMany({
+            where: {
+                shopId: shopid as string,
+            },
+            select: {
+                // Explicitly select fields (excludes otpSecret)
+                id: true,
+                merchantId: true,
+                shopId: true,
+                items: true,
+                status: true,
+                result: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        });
+        return h.response({ version: '1.0.0', data: reviews }).code(200);
     } catch (error: any) {
         return h
             .response({
