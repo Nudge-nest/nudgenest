@@ -31,6 +31,7 @@ model Merchants {
 model Reviews {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   merchantId    String
+  shopId        String
   customerEmail String
   customerPhone String
   items         Json

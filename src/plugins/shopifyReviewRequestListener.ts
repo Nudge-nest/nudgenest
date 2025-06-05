@@ -13,15 +13,31 @@ declare module '@hapi/hapi' {
     }
 }
 
+const extractShopIdFromOrderStatusUrl = (url: string): unknown =>{
+    const match = url.match(/\/(\d+)\/orders\//);
+
+    if (match && match[1]) {
+        return match[1];
+    }
+
+    // Return null if pattern doesn't match
+    return null;
+};
+
 const createNewReview = async (prisma: any, shopifyMessage: any) => {
-    const { merchant_business_entity_id, customer, line_items } = shopifyMessage;
+    const { merchant_business_entity_id, customer, line_items, order_status_url } = shopifyMessage;
     if (!customer?.email) {
         throw new Error('Missing customer email');
     }
     try {
+        const shopId = extractShopIdFromOrderStatusUrl(order_status_url);
+        if (!shopId) {
+            throw new Error('Missing shop id for shopify, new review could not be created');
+        }
         const newReview = await prisma.reviews.create({
             data: {
                 merchantId: merchant_business_entity_id,
+                shopId: shopId,
                 customerPhone: customer.phone || '',
                 customerEmail: customer.email,
                 items: line_items,
