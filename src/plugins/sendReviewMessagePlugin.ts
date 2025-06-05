@@ -56,7 +56,7 @@ const sendReviewMessagePlugin: Hapi.Plugin<null> = {
                                         orderNumber: messageContent.order_number,
                                         items: extractParamsFromLineItems(messageContent.line_items),
                                         customerName: messageContent.userName,
-                                        reviewURL: 'https://nudgenest-review-ui-1094805904049.europe-west1.run.app/' + messageContent.reviewId,
+                                        reviewURL: 'https://nudgenest-review-ui-1094805904049.europe-west1.run.app/review/' + messageContent.reviewId,
                                     },
                                 },
                             ],
