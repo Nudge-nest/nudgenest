@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma/prisma/client"
 }
 
 datasource db {
@@ -34,6 +35,7 @@ model Reviews {
   shopId        String
   customerEmail String
   customerPhone String
+  customerName  String
   items         Json
   result        Json?
   status        String   @default("Pending")
