@@ -29,6 +29,55 @@ const sendEmail = async (email: any) => {
     return sgMail.send(email);
 };
 
+const sendEmailMessageToReviewer = async (messageContent: any) => {
+    return sendEmail({
+        from: 'nudgenest@gmail.com',
+        personalizations: [
+            {
+                to: [
+                    {
+                        email: messageContent.email,
+                    },
+                ],
+                dynamic_template_data: {
+                    orderNumber: messageContent.order_number,
+                    items: extractParamsFromLineItems(messageContent.line_items),
+                    customerName: messageContent.userName,
+                    reviewURL:
+                        'https://nudgenest-review-ui-1094805904049.europe-west1.run.app/review/' +
+                        messageContent.reviewId,
+                },
+            },
+        ],
+        template_id: 'd-2ad945b97c4c4bbc8adc640b36c25f3e',
+    });
+};
+
+//TODO: remember to fit template details to match merchant's email
+const sendEmailMessageToMerchant = async (messageContent: any) => {
+    return sendEmail({
+        from: 'nudgenest@gmail.com',
+        personalizations: [
+            {
+                to: [
+                    {
+                        email: messageContent.email,
+                    },
+                ],
+                dynamic_template_data: {
+                    orderNumber: messageContent.order_number,
+                    items: extractParamsFromLineItems(messageContent.line_items),
+                    customerName: messageContent.userName,
+                    reviewURL:
+                        'https://nudgenest-review-ui-1094805904049.europe-west1.run.app/review/' +
+                        messageContent.reviewId,
+                },
+            },
+        ],
+        template_id: 'd-2ad945b97c4c4bbc8adc640b36c25f3e',
+    });
+};
+
 const sendReviewMessagePlugin: Hapi.Plugin<null> = {
     name: 'reviewMessage',
     register: async (server: Hapi.Server) => {
@@ -41,27 +90,14 @@ const sendReviewMessagePlugin: Hapi.Plugin<null> = {
                         msg.content.toString()
                     ) as IRabbitDataObject<IReviewMessagePayloadContent>;
                     const messageContent = rawContent.payload.content;
+                    //Todo: Get merchant configs from DB and use to send message
                     if (messageContent.type === 'email' || messageContent.type === 'auto') {
                         //Send email here
-                        await sendEmail({
-                            from: 'nudgenest@gmail.com',
-                            personalizations: [
-                                {
-                                    to: [
-                                        {
-                                            email: messageContent.email,
-                                        },
-                                    ],
-                                    dynamic_template_data: {
-                                        orderNumber: messageContent.order_number,
-                                        items: extractParamsFromLineItems(messageContent.line_items),
-                                        customerName: messageContent.userName,
-                                        reviewURL: 'https://nudgenest-review-ui-1094805904049.europe-west1.run.app/review/' + messageContent.reviewId,
-                                    },
-                                },
-                            ],
-                            template_id: 'd-2ad945b97c4c4bbc8adc640b36c25f3e',
-                        });
+                        await sendEmailMessageToReviewer(messageContent);
+                        await sendEmailMessageToMerchant(messageContent);
+                    }
+                    if (messageContent.type === 'reminder') {
+                        await sendEmailMessageToReviewer(messageContent);
                     }
                     // Process the valid JSON message
                 } catch (err: any) {

@@ -13,7 +13,7 @@ declare module '@hapi/hapi' {
     }
 }
 
-const extractShopIdFromOrderStatusUrl = (url: string): unknown =>{
+const extractShopIdFromOrderStatusUrl = (url: string): unknown => {
     const match = url.match(/\/(\d+)\/orders\//);
 
     if (match && match[1]) {

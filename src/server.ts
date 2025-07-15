@@ -9,7 +9,8 @@ import shopifyReviewRequestListenerPlugin from './plugins/shopifyReviewRequestLi
 import prismaPlugin from './plugins/prisma';
 import merchantsPlugin from './plugins/merchant';
 import reviewsPlugin from './plugins/review';
-import healthcheck from "./plugins/healthcheck";
+import healthcheck from './plugins/healthcheck';
+import reviewConfigsPlugin from './plugins/configs';
 
 dotenv.config();
 
@@ -39,6 +40,7 @@ const init = async () => {
         reviewsPlugin,
         sendReviewMessagePlugin,
         shopifyReviewRequestListenerPlugin,
+        reviewConfigsPlugin,
     ]);
 
     server.route({
