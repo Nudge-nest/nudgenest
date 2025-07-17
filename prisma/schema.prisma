@@ -90,15 +90,35 @@ type EmailContent {
   subject    String
   body       String
   buttonText String
+  reminder   ReminderEmailContent
+}
+
+type ReminderEmailContent {
+  subject    String
+  body       String
+  buttonText String
 }
 
 type ReminderSettings {
   qty    String
-  period String
+  period REMINDERPERIOD
+}
+
+enum REMINDERPERIOD {
+  BIWEEKLY
+  WEEKLY
+  BIMONTHLY
+  MONTHLY
 }
 
 type PublishSettings {
-  autoPublish String
+  autoPublish AUTOPUBLISH
+}
+
+enum AUTOPUBLISH {
+  THREESTARS
+  FOURSTARS
+  FIVESTARS
 }
 
 type QRSettings {
@@ -107,10 +127,18 @@ type QRSettings {
 }
 
 type ReviewSettings {
-  timing       REVIEWTIMING
-  replies      Boolean
-  autoVerify   Boolean
-  storeReviews Boolean
+  timing              REVIEWTIMING
+  replies             Boolean
+  autoVerify          Boolean
+  storeReviews        Boolean
+  storeReviewSettings StoreReviewsSetting
+  reviewIntroText     String
+}
+
+type StoreReviewsSetting {
+  ratingText        String[]
+  amountOfQuestions String
+  storeName         String
 }
 
 enum REVIEWTIMING {

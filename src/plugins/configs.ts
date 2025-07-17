@@ -18,7 +18,7 @@ const reviewConfigsPlugin: Hapi.Plugin<null> = {
         server.route([
             {
                 method: 'POST',
-                path: '/api/v1/config/{merchantId}',
+                path: '/api/v1/config',
                 handler: createReviewConfigsHandler,
                 options: {
                     auth: false,
@@ -45,7 +45,6 @@ const reviewConfigsPlugin: Hapi.Plugin<null> = {
 };
 
 const createReviewConfigsHandler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-    const { merchantId } = request.params;
     const configs = request.payload;
     const { prisma } = request.server.app;
     try {
