@@ -83,7 +83,7 @@ const createMerchantHandler = async (request: Hapi.Request, h: Hapi.ResponseTool
             data: defaultConfigs as any,
         });
         //Send Registration message to Merchant
-        return h.response({ version: '1.0.0', data: {merchant, reviewConfigs} }).code(200);
+        return h.response({ version: '1.0.0', data: { merchant, reviewConfigs } }).code(200);
     } catch (error: any) {
         return h
             .response({

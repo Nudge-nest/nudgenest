@@ -11,6 +11,7 @@ import merchantsPlugin from './plugins/merchant';
 import reviewsPlugin from './plugins/review';
 import healthcheck from './plugins/healthcheck';
 import reviewConfigsPlugin from './plugins/configs';
+import reviewMediaPlugin from "./plugins/media";
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ const init = async () => {
         sendReviewMessagePlugin,
         shopifyReviewRequestListenerPlugin,
         reviewConfigsPlugin,
+        reviewMediaPlugin,
     ]);
 
     server.route({

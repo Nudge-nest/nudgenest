@@ -17,11 +17,14 @@
         "db-p": "npx prisma db push"
     },
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.848.0",
+        "@aws-sdk/s3-request-presigner": "^3.848.0",
         "@hapi/hapi": "^21.4.0",
         "@hapi/inert": "^7.1.0",
         "@prisma/client": "^6.11.1",
         "@sendgrid/mail": "^8.1.5",
         "amqplib": "^0.10.8",
+        "busboy": "^1.6.0",
         "dotenv": "^16.6.1",
         "hapi-alive": "^2.0.4",
         "hapi-pino": "^12.1.0",
@@ -33,6 +36,7 @@
     "devDependencies": {
         "@eslint/js": "^9.31.0",
         "@types/amqplib": "^0.10.7",
+        "@types/busboy": "^1.5.4",
         "@types/node": "^22.16.3",
         "@types/nodemailer": "^6.4.17",
         "eslint": "^9.31.0",
