@@ -5,7 +5,6 @@ import * as dotenv from 'dotenv';
 import Busboy from 'busboy';
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import crypto from 'crypto';
-import path from 'path';
 
 dotenv.config();
 
@@ -14,26 +13,6 @@ interface UploadedFile {
     filename: string;
     headers: { [key: string]: string };
     payload: Buffer;
-}
-
-interface FileUploadRequest {
-    reviewId: string;
-    merchantId: string;
-    files: UploadedFile[];
-}
-
-interface FileUploadResponse {
-    success: boolean;
-    data?: {
-        uploadedFiles: {
-            id: string;
-            url: string;
-            filename: string;
-            size: number;
-            type: string;
-        }[];
-    };
-    error?: string;
 }
 
 // Configuration
@@ -69,14 +48,6 @@ const reviewMediaPlugin: Hapi.Plugin<null> = {
                         uploads: '/tmp', // Temporary directory for large files
                     }
                 }
-            },
-            {
-                method: 'GET',
-                path: '/api/v1/media/{reviewId}',
-                handler: getMediaFromS3Handler,
-                options: {
-                    auth: false,
-                },
             },
             {
                 method: 'DELETE',
@@ -174,27 +145,6 @@ const uploadMediaToS3Handler = async (request: Hapi.Request, h: Hapi.ResponseToo
 
         request.raw.req.pipe(busboy);
     });
-};
-
-const getMediaFromS3Handler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-    const { merchantId } = request.params;
-    const { prisma } = request.server.app;
-    try {
-        const merchant = await prisma.configurations.findMany({
-            where: {
-                merchantId: merchantId,
-            },
-        });
-        //Send Registration message to Merchant
-        return h.response({ version: '1.0.0', data: merchant }).code(200);
-    } catch (error: any) {
-        return h
-            .response({
-                version: '1.0.0',
-                error: error.message,
-            })
-            .code(500);
-    }
 };
 
 const deleteMediaFromS3Handler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
