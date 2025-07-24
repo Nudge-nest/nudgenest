@@ -13,7 +13,7 @@ declare module '@hapi/hapi' {
     }
 }
 
-const extractShopIdFromOrderStatusUrl = (url: string): unknown =>{
+const extractShopIdFromOrderStatusUrl = (url: string): unknown => {
     const match = url.match(/\/(\d+)\/orders\//);
 
     if (match && match[1]) {
@@ -40,6 +40,7 @@ const createNewReview = async (prisma: any, shopifyMessage: any) => {
                 shopId: shopId,
                 customerPhone: customer.phone || '',
                 customerEmail: customer.email,
+                customerName: `${customer.first_name} ${customer.last_name}`,
                 items: line_items,
             },
         });

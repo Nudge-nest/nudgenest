@@ -16,6 +16,10 @@ steps:
           - 'SENDGRID_API_KEY'
           - 'DATABASE_URL'
           - 'GOOGLE_APP_PASSWORD'
+          - 'APP_AWS_ACCESS_KEY'
+          - 'APP_AWS_SECRET_KEY'
+          - 'APP_AWS_REGION'
+          - 'APP_AWS_BUCKET_NAME'
 
     # -------------------- Push to google repo ---------------------------------
     - name: gcr.io/cloud-builders/docker
@@ -44,12 +48,24 @@ steps:
           - 'DATABASE_URL=projects/1094805904049/secrets/DATABASE_URL:latest'
           - '--update-secrets'
           - 'GOOGLE_APP_PASSWORD=projects/1094805904049/secrets/GOOGLE_APP_PASSWORD:latest'
+          - '--update-secrets'
+          - 'APP_AWS_ACCESS_KEY=projects/1094805904049/secrets/APP_AWS_ACCESS_KEY:latest'
+          - '--update-secrets'
+          - 'APP_AWS_SECRET_KEY=projects/1094805904049/secrets/APP_AWS_SECRET_KEY:latest'
+          - '--update-secrets'
+          - 'APP_AWS_REGION=projects/1094805904049/secrets/APP_AWS_REGION:latest'
+          - '--update-secrets'
+          - 'APP_AWS_BUCKET_NAME=projects/1094805904049/secrets/APP_AWS_BUCKET_NAME:latest'
       id: Deploy
       secretEnv:
           - 'RABBITMQ_URL_AWS'
           - 'SENDGRID_API_KEY'
           - 'DATABASE_URL'
           - 'GOOGLE_APP_PASSWORD'
+          - 'APP_AWS_ACCESS_KEY'
+          - 'APP_AWS_SECRET_KEY'
+          - 'APP_AWS_REGION'
+          - 'APP_AWS_BUCKET_NAME'
       entrypoint: gcloud
       waitFor: ['push']
 images:
@@ -76,4 +92,12 @@ availableSecrets:
           env: 'DATABASE_URL'
         - versionName: 'projects/$PROJECT_ID/secrets/GOOGLE_APP_PASSWORD/versions/1'
           env: 'GOOGLE_APP_PASSWORD'
+        - versionName: 'projects/$PROJECT_ID/secrets/APP_AWS_ACCESS_KEY/versions/1'
+          env: 'APP_AWS_ACCESS_KEY'
+        - versionName: 'projects/$PROJECT_ID/secrets/APP_AWS_SECRET_KEY/versions/1'
+          env: 'APP_AWS_SECRET_KEY'
+        - versionName: 'projects/$PROJECT_ID/secrets/APP_AWS_REGION/versions/1'
+          env: 'APP_AWS_REGION'
+        - versionName: 'projects/$PROJECT_ID/secrets/APP_AWS_BUCKET_NAME/versions/1'
+          env: 'APP_AWS_BUCKET_NAME'
 # [END cloudbuild_quickstart_build]

@@ -17,31 +17,35 @@
         "db-p": "npx prisma db push"
     },
     "dependencies": {
-        "@hapi/hapi": "^21.3.12",
+        "@aws-sdk/client-s3": "^3.850.0",
+        "@aws-sdk/s3-request-presigner": "^3.850.0",
+        "@hapi/hapi": "^21.4.0",
         "@hapi/inert": "^7.1.0",
-        "@prisma/client": "^6.9.0",
-        "@sendgrid/mail": "^8.1.4",
-        "amqplib": "^0.10.7",
-        "dotenv": "^16.4.5",
+        "@prisma/client": "^6.12.0",
+        "@sendgrid/mail": "^8.1.5",
+        "amqplib": "^0.10.8",
+        "busboy": "^1.6.0",
+        "dotenv": "^16.6.1",
         "hapi-alive": "^2.0.4",
         "hapi-pino": "^12.1.0",
         "jsonschema": "^1.5.0",
-        "nodemailer": "^6.10.0",
+        "nodemailer": "^6.10.1",
         "ts-node": "^10.9.2",
-        "twilio": "^5.4.0"
+        "twilio": "^5.7.3"
     },
     "devDependencies": {
-        "@eslint/js": "^9.15.0",
+        "@eslint/js": "^9.31.0",
         "@types/amqplib": "^0.10.7",
-        "@types/node": "^22.10.1",
+        "@types/busboy": "^1.5.4",
+        "@types/node": "^22.16.5",
         "@types/nodemailer": "^6.4.17",
-        "eslint": "^9.15.0",
-        "globals": "^15.12.0",
-        "nodemon": "^3.1.7",
+        "eslint": "^9.31.0",
+        "globals": "^15.15.0",
+        "nodemon": "^3.1.10",
         "npm-run-all": "^4.1.5",
-        "prettier": "^3.4.1",
-        "prisma": "^6.9.0",
-        "typescript": "^5.7.2",
-        "typescript-eslint": "^8.16.0"
+        "prettier": "^3.6.2",
+        "prisma": "^6.12.0",
+        "typescript": "^5.8.3",
+        "typescript-eslint": "^8.38.0"
     }
 }

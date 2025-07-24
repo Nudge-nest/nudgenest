@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma/prisma/client"
 }
 
 datasource db {
@@ -14,33 +15,56 @@ datasource db {
 }
 
 model Merchants {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  shopId       String   @unique
-  domains      String
-  currencyCode String
-  email        String   @unique
-  name         String   @unique
-  businessInfo String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  address      Address
+  id             String           @id @default(auto()) @map("_id") @db.ObjectId
+  shopId         String           @unique
+  domains        String
+  currencyCode   String
+  email          String           @unique
+  name           String           @unique
+  businessInfo   String           @unique
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  address        Address
+  Configurations Configurations[]
+  Reviews        Reviews[]
 
   @@map("merchants")
 }
 
 model Reviews {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  merchantId    String
+  merchantId    String   @db.ObjectId
   shopId        String
   customerEmail String
   customerPhone String
+  customerName  String   @default("Verified Customer")
   items         Json
   result        Json?
+  verified      Boolean  @default(true)
+  replies       Json?
   status        String   @default("Pending")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  merchant Merchants @relation(fields: [merchantId], references: [id])
+
   @@map("reviews")
+}
+
+model Configurations {
+  id           String           @id @default(auto()) @map("_id") @db.ObjectId
+  merchantId   String           @unique @db.ObjectId
+  emailContent EmailContent
+  reminders    ReminderSettings
+  publish      PublishSettings
+  qrCode       QRSettings
+  general      Json
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  merchant Merchants @relation(fields: [merchantId], references: [id])
+
+  @@map("configs")
 }
 
 type Address {
@@ -60,4 +84,65 @@ type Business {
   shopDescription  String
   addressIsBilling Boolean
   contactEmail     String
+}
+
+type EmailContent {
+  subject    String
+  body       String
+  buttonText String
+  reminder   ReminderEmailContent
+}
+
+type ReminderEmailContent {
+  subject    String
+  body       String
+  buttonText String
+}
+
+type ReminderSettings {
+  qty    String
+  period REMINDERPERIOD
+}
+
+enum REMINDERPERIOD {
+  BIWEEKLY
+  WEEKLY
+  BIMONTHLY
+  MONTHLY
+}
+
+type PublishSettings {
+  autoPublish AUTOPUBLISH
+}
+
+enum AUTOPUBLISH {
+  THREESTARS
+  FOURSTARS
+  FIVESTARS
+}
+
+type QRSettings {
+  url    String
+  qrCode String
+}
+
+type ReviewSettings {
+  timing              REVIEWTIMING
+  replies             Boolean
+  autoVerify          Boolean
+  storeReviews        Boolean
+  storeReviewSettings StoreReviewsSetting
+  reviewIntroText     String
+}
+
+type StoreReviewsSetting {
+  ratingText        String[]
+  amountOfQuestions String
+  storeName         String
+}
+
+enum REVIEWTIMING {
+  PURCHASE
+  FULFILMENT
+  DELIVERY
 }

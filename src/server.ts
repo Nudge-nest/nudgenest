@@ -9,6 +9,9 @@ import shopifyReviewRequestListenerPlugin from './plugins/shopifyReviewRequestLi
 import prismaPlugin from './plugins/prisma';
 import merchantsPlugin from './plugins/merchant';
 import reviewsPlugin from './plugins/review';
+import healthcheck from './plugins/healthcheck';
+import reviewConfigsPlugin from './plugins/configs';
+import reviewMediaPlugin from './plugins/media';
 
 dotenv.config();
 
@@ -30,6 +33,7 @@ const init = async () => {
 
     await server.register(require('@hapi/inert'));
     await server.register([
+        healthcheck,
         prismaPlugin,
         rabbitPlugin,
         shopifyWebhookPlugin,
@@ -37,6 +41,8 @@ const init = async () => {
         reviewsPlugin,
         sendReviewMessagePlugin,
         shopifyReviewRequestListenerPlugin,
+        reviewConfigsPlugin,
+        reviewMediaPlugin,
     ]);
 
     server.route({

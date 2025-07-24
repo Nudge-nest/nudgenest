@@ -1,6 +1,9 @@
 /*Handles all things related to merchants*/
 import Hapi from '@hapi/hapi';
 
+// @ts-ignore
+import defaultConfigs from '../../sampleJson/defaultConfigs.json';
+
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -43,8 +46,8 @@ const verifyMerchantHandler = async (request: Hapi.Request, h: Hapi.ResponseTool
         const merchant = await prisma.merchants.findMany({
             where: {
                 shopId: {
-                    contains: merchantId as string
-                }
+                    contains: merchantId as string,
+                },
             },
             select: {
                 // Explicitly select fields (excludes otpSecret)
@@ -76,8 +79,11 @@ const createMerchantHandler = async (request: Hapi.Request, h: Hapi.ResponseTool
         const merchant = await prisma.merchants.create({
             data: merchantData as any,
         });
+        const reviewConfigs = await prisma.configurations.create({
+            data: defaultConfigs as any,
+        });
         //Send Registration message to Merchant
-        return h.response({ version: '1.0.0', data: merchant }).code(200);
+        return h.response({ version: '1.0.0', data: { merchant, reviewConfigs } }).code(200);
     } catch (error: any) {
         return h
             .response({

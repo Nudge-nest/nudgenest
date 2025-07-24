@@ -1,5 +1,5 @@
 import Hapi from '@hapi/hapi';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '../../generated/prisma/prisma/client';
 
 declare module '@hapi/hapi' {
     interface ServerApplicationState {
