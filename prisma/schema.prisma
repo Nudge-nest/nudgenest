@@ -37,10 +37,10 @@ model Reviews {
   shopId        String
   customerEmail String
   customerPhone String
-  customerName  String
+  customerName  String   @default("Verified Customer")
   items         Json
   result        Json?
-  verified      Boolean
+  verified      Boolean  @default(true)
   replies       Json?
   status        String   @default("Pending")
   createdAt     DateTime @default(now())

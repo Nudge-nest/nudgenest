@@ -40,6 +40,7 @@ const createNewReview = async (prisma: any, shopifyMessage: any) => {
                 shopId: shopId,
                 customerPhone: customer.phone || '',
                 customerEmail: customer.email,
+                customerName: `${customer.first_name} ${customer.last_name}`,
                 items: line_items,
             },
         });

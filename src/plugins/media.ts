@@ -46,8 +46,8 @@ const reviewMediaPlugin: Hapi.Plugin<null> = {
                         maxBytes: MAX_FILE_SIZE * MAX_FILES_PER_REQUEST,
                         timeout: 60000, // 60 seconds for large files
                         uploads: '/tmp', // Temporary directory for large files
-                    }
-                }
+                    },
+                },
             },
             {
                 method: 'DELETE',
@@ -60,7 +60,6 @@ const reviewMediaPlugin: Hapi.Plugin<null> = {
         ]);
     },
 };
-
 
 const uploadMediaToS3Handler = async (request: Hapi.Request, h: Hapi.ResponseToolkit): Promise<Hapi.ResponseObject> => {
     return new Promise((resolve) => {
@@ -89,7 +88,7 @@ const uploadMediaToS3Handler = async (request: Hapi.Request, h: Hapi.ResponseToo
                 files.push({
                     buffer,
                     filename: info.filename || `file_${files.length}.jpg`,
-                    contentType: info.mimeType || 'image/jpeg'
+                    contentType: info.mimeType || 'image/jpeg',
                 });
                 console.log(`File received: ${info.filename}, ${buffer.length} bytes`);
             });
@@ -114,32 +113,41 @@ const uploadMediaToS3Handler = async (request: Hapi.Request, h: Hapi.ResponseToo
                     const randomId = crypto.randomBytes(4).toString('hex');
                     const fileName = `${merchantId}/${timestamp}_${randomId}_${i}.jpg`;
 
-                    await s3Client.send(new PutObjectCommand({
-                        Bucket: process.env.APP_AWS_BUCKET_NAME!,
-                        Key: fileName,
-                        Body: file.buffer,
-                        ContentType: file.contentType,
-                    }));
+                    await s3Client.send(
+                        new PutObjectCommand({
+                            Bucket: process.env.APP_AWS_BUCKET_NAME!,
+                            Key: fileName,
+                            Body: file.buffer,
+                            ContentType: file.contentType,
+                        })
+                    );
 
                     uploadedFiles.push({
                         id: crypto.randomUUID(),
                         url: `https://${process.env.APP_AWS_BUCKET_NAME}.s3.${process.env.APP_AWS_REGION}.amazonaws.com/${fileName}`,
                         filename: file.filename,
                         size: file.buffer.length,
-                        type: file.contentType
+                        type: file.contentType,
                     });
                 }
 
-                resolve(h.response({
-                    version: '1.0.0',
-                    data: uploadedFiles
-                }).code(200));
-
+                resolve(
+                    h
+                        .response({
+                            version: '1.0.0',
+                            data: uploadedFiles,
+                        })
+                        .code(200)
+                );
             } catch (error: any) {
-                resolve(h.response({
-                    version: '1.0.0',
-                    error: 'Upload failed'
-                }).code(500));
+                resolve(
+                    h
+                        .response({
+                            version: '1.0.0',
+                            error: 'Upload failed',
+                        })
+                        .code(500)
+                );
             }
         });
 
@@ -161,10 +169,12 @@ const deleteMediaFromS3Handler = async (request: Hapi.Request, h: Hapi.ResponseT
         const expectedPrefix = `https://${bucketName}.s3.${region}.amazonaws.com/`;
 
         if (!mediaUrl.startsWith(expectedPrefix)) {
-            return h.response({
-                version: '1.0.0',
-                error: 'Invalid media URL format'
-            }).code(400);
+            return h
+                .response({
+                    version: '1.0.0',
+                    error: 'Invalid media URL format',
+                })
+                .code(400);
         }
 
         // Extract the S3 key (everything after the bucket URL)
@@ -174,10 +184,12 @@ const deleteMediaFromS3Handler = async (request: Hapi.Request, h: Hapi.ResponseT
 
         // Validate the key format (should start with merchantId/)
         if (!s3Key.includes('/')) {
-            return h.response({
-                version: '1.0.0',
-                error: 'Invalid S3 key format'
-            }).code(400);
+            return h
+                .response({
+                    version: '1.0.0',
+                    error: 'Invalid S3 key format',
+                })
+                .code(400);
         }
 
         // Create S3 client
@@ -190,10 +202,12 @@ const deleteMediaFromS3Handler = async (request: Hapi.Request, h: Hapi.ResponseT
         });
 
         // Delete from S3
-        await s3Client.send(new DeleteObjectCommand({
-            Bucket: bucketName,
-            Key: s3Key,
-        }));
+        await s3Client.send(
+            new DeleteObjectCommand({
+                Bucket: bucketName,
+                Key: s3Key,
+            })
+        );
 
         console.log('Successfully deleted:', s3Key);
         return h.response({ version: '1.0.0', data: s3Key }).code(200);
