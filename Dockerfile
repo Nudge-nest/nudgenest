@@ -26,6 +26,7 @@ WORKDIR /app
 COPY --from=builder /app/build ./build
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/generated ./generated
 
 # Set your environment variables (OPTIONAL – better passed at runtime via env or secrets manager)
 # These can be removed entirely if you're passing envs from Docker CLI or a platform like GCP Cloud Run
@@ -33,6 +34,10 @@ ENV FILE_ENCODING=utf8
 
 # Port exposed by your app
 EXPOSE 8080
+
+# Health check (optional but recommended)
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://0.0.0.0:8080/health || exit 1
 
 # Start the app
 CMD ["yarn", "start"]
