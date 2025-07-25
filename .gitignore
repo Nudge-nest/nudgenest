@@ -30,7 +30,7 @@ dist-ssr
 
 src/prisma/migrations/migration_lock.toml
 
-sampleJson
+sampleJson/
 
 generated/
 

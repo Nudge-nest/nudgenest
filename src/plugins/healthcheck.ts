@@ -11,11 +11,14 @@ const healthPlugin: Hapi.Plugin<undefined> = {
     register: async (server: Hapi.Server) => {
         server.route({
             method: 'GET',
-            path: '/',
+            path: '/health',
             handler: (_, h: Hapi.ResponseToolkit) => {
                 //TODO. Add database check to here?
-                return h.response({ up: true }).code(200);
+                return h.response({ status: 'OK', timestamp: new Date().toISOString()}).code(200);
             },
+            options:{
+                auth: false,
+            }
         });
     },
 };
