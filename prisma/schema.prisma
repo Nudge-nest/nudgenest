@@ -32,21 +32,21 @@ model Merchants {
 }
 
 model Reviews {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  merchantId    String   @db.ObjectId
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  merchantId    String
   shopId        String
   customerEmail String
   customerPhone String
-  customerName  String   @default("Verified Customer")
+  customerName  String     @default("Verified Customer")
   items         Json
   result        Json?
-  verified      Boolean  @default(true)
+  verified      Boolean    @default(true)
   replies       Json?
-  status        String   @default("Pending")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  merchant Merchants @relation(fields: [merchantId], references: [id])
+  status        String     @default("Pending")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  Merchants     Merchants? @relation(fields: [merchantsId], references: [id])
+  merchantsId   String?    @db.ObjectId
 
   @@map("reviews")
 }
