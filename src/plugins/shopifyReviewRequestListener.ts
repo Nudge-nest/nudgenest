@@ -34,6 +34,7 @@ const createNewReview = async (prisma: any, shopifyMessage: any) => {
         if (!shopId) {
             throw new Error('Missing shop id for shopify, new review could not be created');
         }
+        //TODO Fetch merchant info and include merchant's id
         const newReview = await prisma.reviews.create({
             data: {
                 merchantId: merchant_business_entity_id,
@@ -42,6 +43,7 @@ const createNewReview = async (prisma: any, shopifyMessage: any) => {
                 customerEmail: customer.email,
                 customerName: `${customer.first_name} ${customer.last_name}`,
                 items: line_items,
+                //merchantsId:
             },
         });
         console.log("['info'] New review created", newReview.id);

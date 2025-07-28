@@ -84,18 +84,24 @@ const getReviewConfigsHandler = async (request: Hapi.Request, h: Hapi.ResponseTo
 };
 
 const updateReviewConfigsHandler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-    const { merchantId } = request.params;
+    const { merchantId } = request.params as { merchantId: string };
     const configs = request.payload;
     const { prisma } = request.server.app;
     try {
-        const merchant = await prisma.configurations.update({
+        const result = await prisma.configurations.updateMany({
             where: {
-                merchantId: merchantId,
+                merchantId: merchantId as string,
             },
             data: configs as any,
         });
+        // Fetch the updated configuration
+        const updatedConfig = await prisma.configurations.findFirst({
+            where: {
+                merchantId: merchantId,
+            },
+        });
         //Send Registration message to Merchant
-        return h.response({ version: '1.0.0', data: merchant }).code(200);
+        return h.response({ version: '1.0.0', data: updatedConfig }).code(200);
     } catch (error: any) {
         return h
             .response({
