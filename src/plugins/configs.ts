@@ -2,6 +2,7 @@
 import Hapi from '@hapi/hapi';
 
 import * as dotenv from 'dotenv';
+import {IReviewConfiguration} from "../types/reviewConfigs";
 
 dotenv.config();
 
@@ -65,6 +66,7 @@ const createReviewConfigsHandler = async (request: Hapi.Request, h: Hapi.Respons
 const getReviewConfigsHandler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
     const { merchantId } = request.params;
     const { prisma } = request.server.app;
+    console.log('MerchantId ', merchantId);
     try {
         const merchant = await prisma.configurations.findMany({
             where: {
@@ -85,8 +87,10 @@ const getReviewConfigsHandler = async (request: Hapi.Request, h: Hapi.ResponseTo
 
 const updateReviewConfigsHandler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
     const { merchantId } = request.params as { merchantId: string };
-    const configs = request.payload;
+    const configs = request.payload as IReviewConfiguration;
     const { prisma } = request.server.app;
+    delete configs.id;
+    console.log('Config update ', merchantId, configs);
     try {
         const result = await prisma.configurations.updateMany({
             where: {

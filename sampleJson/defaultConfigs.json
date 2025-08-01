@@ -76,5 +76,16 @@
       "type": "image"
     }
   ],
-  "general": []
+  "general": {
+  "shopReviewQuestions"
+  :
+  [
+    {
+      "key": "default",
+      "value": "how did we do?",
+      "description": "Shop review default question",
+      "type": "text"
+    }
+  ]
+}
 }
