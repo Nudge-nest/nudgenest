@@ -68,6 +68,7 @@ export interface IMerchant {
 
 export interface IReview {
     id?: string;
+    merchantBusinessId: string;
     merchantId: string;
     items: IReviewItem[];
     result: IReviewResult[];

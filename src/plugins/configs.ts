@@ -2,6 +2,7 @@
 import Hapi from '@hapi/hapi';
 
 import * as dotenv from 'dotenv';
+import { IReviewConfiguration } from '../types/reviewConfigs';
 
 dotenv.config();
 
@@ -65,6 +66,7 @@ const createReviewConfigsHandler = async (request: Hapi.Request, h: Hapi.Respons
 const getReviewConfigsHandler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
     const { merchantId } = request.params;
     const { prisma } = request.server.app;
+    console.log('MerchantId ', merchantId);
     try {
         const merchant = await prisma.configurations.findMany({
             where: {
@@ -84,18 +86,26 @@ const getReviewConfigsHandler = async (request: Hapi.Request, h: Hapi.ResponseTo
 };
 
 const updateReviewConfigsHandler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-    const { merchantId } = request.params;
-    const configs = request.payload;
+    const { merchantId } = request.params as { merchantId: string };
+    const configs = request.payload as IReviewConfiguration;
     const { prisma } = request.server.app;
+    delete configs.id;
+    console.log('Config update ', merchantId, configs);
     try {
-        const merchant = await prisma.configurations.update({
+        const result = await prisma.configurations.updateMany({
             where: {
-                merchantId: merchantId,
+                merchantId: merchantId as string,
             },
             data: configs as any,
         });
+        // Fetch the updated configuration
+        const updatedConfig = await prisma.configurations.findFirst({
+            where: {
+                merchantId: merchantId,
+            },
+        });
         //Send Registration message to Merchant
-        return h.response({ version: '1.0.0', data: merchant }).code(200);
+        return h.response({ version: '1.0.0', data: updatedConfig }).code(200);
     } catch (error: any) {
         return h
             .response({

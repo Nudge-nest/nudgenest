@@ -1,27 +1,91 @@
 {
-  "id": "",
   "merchantId": "68414ac959456a2575dd1aae",
-  "emailContent": {
-    "subject": "how did it go?",
-    "body": "We would be grateful if you shared how things look and feel.",
-    "buttonText": "Leave a review",
-    "reminder": {
-      "subject": "how did it go? [REMINDER]",
-      "body": "We would be grateful if you shared how things look and feel.",
-      "buttonText": "Leave a review"
+  "emailContent": [
+     {
+      "key": "subject",
+      "value": "how did it go?",
+      "description": "The Subject of the review email to send to customer",
+      "type": "text"
+    },
+     {
+      "key": "body",
+      "value": "We would be grateful if you shared how things look and feel.",
+      "description": "The Body of the review email to send to customer",
+      "type": "text"
+    },
+     {
+      "key": "buttonText",
+      "value": "Leave a review",
+      "description": "The text displayed on the review button",
+      "type": "text"
     }
-  },
-  "reminders": {
-    "qty": "2",
-    "period": "BIMONTHLY"
-  },
-  "publish": {
-    "autoPublish": "THREESTARS"
-  },
-  "qrCode": {
-    "url": "",
-    "qrCode": ""
-  },
+  ],
+  "reminderEmailContent": [
+    {
+      "key": "reminderSubject",
+      "value": "how did it go? [REMINDER]",
+      "description": "The Subject of the reminder email",
+      "type": "text"
+    },
+    {
+      "key": "reminderBody",
+      "value": "We would be grateful if you shared how things look and feel.",
+      "description": "The Body of the reminder email",
+      "type": "text"
+    },
+    {
+      "key": "reminderButtonText",
+      "value": "Leave a review",
+      "description": "The text displayed on the reminder review button",
+      "type": "text"
+    }
+  ],
+  "remindersFrequency": [
+     {
+      "key": "remindersQty",
+      "value": "2",
+      "description": "Number of reminder emails to send",
+      "type": "number"
+    },
+     {
+      "key": "remindersPeriod",
+      "value": "BIMONTHLY",
+      "description": "Frequency of reminder emails",
+      "type": "select"
+    }
+  ],
+  "publish": [
+    {
+      "key": "autoPublish",
+      "value": "THREESTARS",
+      "description": "Minimum star rating for auto-publishing reviews",
+      "type": "select"
+    }
+  ],
+  "qrCode": [
+     {
+      "key": "qrCodeUrl",
+      "value": "",
+      "description": "URL for the QR code to direct to",
+      "type": "url"
+    },
+     {
+      "key": "qrCodeData",
+      "value": "",
+      "description": "Generated QR code image data",
+      "type": "image"
+    }
+  ],
   "general": {
-  }
+  "shopReviewQuestions"
+  :
+  [
+    {
+      "key": "default",
+      "value": "how did we do?",
+      "description": "Shop review default question",
+      "type": "text"
+    }
+  ]
+}
 }

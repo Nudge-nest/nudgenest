@@ -32,39 +32,63 @@ model Merchants {
 }
 
 model Reviews {
-  id            String     @id @default(auto()) @map("_id") @db.ObjectId
-  merchantId    String
-  shopId        String
-  customerEmail String
-  customerPhone String
-  customerName  String     @default("Verified Customer")
-  items         Json
-  result        Json?
-  verified      Boolean    @default(true)
-  replies       Json?
-  status        String     @default("Pending")
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
-  Merchants     Merchants? @relation(fields: [merchantsId], references: [id])
-  merchantsId   String?    @db.ObjectId
+  id                 String     @id @default(auto()) @map("_id") @db.ObjectId
+  merchantId         String     @db.ObjectId
+  merchantBusinessId String
+  shopId             String
+  customerEmail      String
+  customerPhone      String
+  customerName       String     @default("Verified Customer")
+  items              Json
+  result             Json?
+  verified           Boolean    @default(true)
+  replies            Json?
+  status             String     @default("Pending")
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  Merchants          Merchants? @relation(fields: [merchantId], references: [id])
 
   @@map("reviews")
 }
 
 model Configurations {
-  id           String           @id @default(auto()) @map("_id") @db.ObjectId
-  merchantId   String           @unique @db.ObjectId
-  emailContent EmailContent
-  reminders    ReminderSettings
-  publish      PublishSettings
-  qrCode       QRSettings
-  general      Json
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  merchantId String @db.ObjectId
 
-  merchant Merchants @relation(fields: [merchantId], references: [id])
+  emailContent         ConfigField[]
+  reminderEmailContent ConfigField[]
+  remindersFrequency   ConfigField[]
+  publish              ConfigField[]
+  qrCode               ConfigField[]
+  general              GeneralConfigs
 
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  Merchants Merchants? @relation(fields: [merchantId], references: [id])
+
+  @@index([merchantId])
   @@map("configs")
+}
+
+type GeneralConfigs {
+  shopReviewQuestions ConfigField[]
+}
+
+type ConfigField {
+  key         String
+  value       String
+  description String
+  type        FieldType
+}
+
+enum FieldType {
+  text
+  number
+  select
+  url
+  image
+  boolean
+  json
 }
 
 type Address {
@@ -86,24 +110,6 @@ type Business {
   contactEmail     String
 }
 
-type EmailContent {
-  subject    String
-  body       String
-  buttonText String
-  reminder   ReminderEmailContent
-}
-
-type ReminderEmailContent {
-  subject    String
-  body       String
-  buttonText String
-}
-
-type ReminderSettings {
-  qty    String
-  period REMINDERPERIOD
-}
-
 enum REMINDERPERIOD {
   BIWEEKLY
   WEEKLY
@@ -119,26 +125,6 @@ enum AUTOPUBLISH {
   THREESTARS
   FOURSTARS
   FIVESTARS
-}
-
-type QRSettings {
-  url    String
-  qrCode String
-}
-
-type ReviewSettings {
-  timing              REVIEWTIMING
-  replies             Boolean
-  autoVerify          Boolean
-  storeReviews        Boolean
-  storeReviewSettings StoreReviewsSetting
-  reviewIntroText     String
-}
-
-type StoreReviewsSetting {
-  ratingText        String[]
-  amountOfQuestions String
-  storeName         String
 }
 
 enum REVIEWTIMING {
