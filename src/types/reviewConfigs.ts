@@ -48,7 +48,7 @@ interface IQrCodeField extends IConfigField {
 }
 
 interface IGeneralConfigs {
-    shopReviewQuestions : IConfigField[]
+    shopReviewQuestions: IConfigField[];
 }
 
 // Stricter version of the main interface (optional)

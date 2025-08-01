@@ -2,7 +2,7 @@
 import Hapi from '@hapi/hapi';
 
 import * as dotenv from 'dotenv';
-import {IReviewConfiguration} from "../types/reviewConfigs";
+import { IReviewConfiguration } from '../types/reviewConfigs';
 
 dotenv.config();
 
