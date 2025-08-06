@@ -18,7 +18,7 @@ const merchantsPlugin: Hapi.Plugin<null> = {
         server.route([
             {
                 method: 'POST',
-                path: '/api/v1/merchants/verify/{merchantId}',
+                path: '/api/v1/merchants/verify/{merchantPlatformId}',
                 handler: verifyMerchantHandler,
                 options: {
                     auth: false,
@@ -36,41 +36,104 @@ const merchantsPlugin: Hapi.Plugin<null> = {
     },
 };
 
-const defaultConfigs = {
-    id: '',
-    merchantId: '68414ac959456a2575dd1aae',
-    emailContent: {
-        subject: 'how did it go?',
-        body: 'We would be grateful if you shared how things look and feel.',
-        buttonText: 'Leave a review',
-        reminder: {
-            subject: 'how did it go? [REMINDER]',
-            body: 'We would be grateful if you shared how things look and feel.',
-            buttonText: 'Leave a review',
+export const defaultConfigs = {
+    merchantId: '',
+    emailContent: [
+        {
+            key: 'subject',
+            value: 'how did it go?',
+            description: 'The Subject of the review email to send to customer',
+            type: 'text',
         },
+        {
+            key: 'body',
+            value: 'We would be grateful if you shared how things look and feel.',
+            description: 'The Body of the review email to send to customer',
+            type: 'text',
+        },
+        {
+            key: 'buttonText',
+            value: 'Leave a review',
+            description: 'The text displayed on the review button',
+            type: 'text',
+        },
+    ],
+    reminderEmailContent: [
+        {
+            key: 'reminderSubject',
+            value: 'how did it go? [REMINDER]',
+            description: 'The Subject of the reminder email',
+            type: 'text',
+        },
+        {
+            key: 'reminderBody',
+            value: 'We would be grateful if you shared how things look and feel.',
+            description: 'The Body of the reminder email',
+            type: 'text',
+        },
+        {
+            key: 'reminderButtonText',
+            value: 'Leave a review',
+            description: 'The text displayed on the reminder review button',
+            type: 'text',
+        },
+    ],
+    remindersFrequency: [
+        {
+            key: 'remindersQty',
+            value: '2',
+            description: 'Number of reminder emails to send',
+            type: 'number',
+        },
+        {
+            key: 'remindersPeriod',
+            value: 'BIMONTHLY',
+            description: 'Frequency of reminder emails',
+            type: 'select',
+        },
+    ],
+    publish: [
+        {
+            key: 'autoPublish',
+            value: 'THREESTARS',
+            description: 'Minimum star rating for auto-publishing reviews',
+            type: 'select',
+        },
+    ],
+    qrCode: [
+        {
+            key: 'qrCodeUrl',
+            value: '',
+            description: 'URL for the QR code to direct to',
+            type: 'url',
+        },
+        {
+            key: 'qrCodeData',
+            value: '',
+            description: 'Generated QR code image data',
+            type: 'image',
+        },
+    ],
+    general: {
+        shopReviewQuestions: [
+            {
+                key: 'default',
+                value: 'how did we do?',
+                description: 'Shop review default question',
+                type: 'text',
+            },
+        ],
     },
-    reminders: {
-        qty: '2',
-        period: 'BIMONTHLY',
-    },
-    publish: {
-        autoPublish: 'THREESTARS',
-    },
-    qrCode: {
-        url: '',
-        qrCode: '',
-    },
-    general: {},
 };
 
 const verifyMerchantHandler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-    const { merchantId } = request.params;
+    const { merchantPlatformId } = request.params;
     const { prisma } = request.server.app;
     try {
         const merchant = await prisma.merchants.findMany({
             where: {
                 shopId: {
-                    contains: merchantId as string,
+                    contains: merchantPlatformId as string,
                 },
             },
             select: {

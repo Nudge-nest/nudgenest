@@ -10,7 +10,7 @@ interface IConfigField {
 
 // Main interface for the review configuration
 export interface IReviewConfiguration {
-    id?: string;
+    id: string;
     merchantId: string;
     emailContent: IConfigField[];
     reminderEmailContent: IConfigField[];
@@ -18,6 +18,8 @@ export interface IReviewConfiguration {
     publish: IConfigField[];
     qrCode: IConfigField[];
     general: IGeneralConfigs;
+    createdAt: string;
+    updatedAt: string;
 }
 
 // Optional: More specific interfaces if you want stricter typing
@@ -60,6 +62,9 @@ export interface IStrictReviewConfiguration {
     publish: IPublishField[];
     qrCode: IQrCodeField[];
     general: IGeneralConfigs;
+    createdAt: string;
+    updatedAt: string;
+    id: string;
 }
 
 // If you need specific enums
