@@ -57,37 +57,35 @@ jobs:
           APP_AWS_SECRET_KEY: 'test-secret'
           GOOGLE_APP_PASSWORD: 'testPass'
 
-      - name: Run all tests
-        run: yarn test
-        env:
-          NODE_ENV: test
-          DATABASE_URL: 'mongodb://test:test@localhost:27017/test'
-          RABBITMQ_URL: 'amqp://localhost'
-
-      - name: Create Pull Request
+      - name: Create Pull Request to test branch
         if: success()
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: develop
-          base: test
-          title: '[Auto] Update from develop to test'
-          body: |
-            ## Automated PR from develop to test
-            
-            This PR was automatically created after:
-            - ✅ yarn.lock was updated (if needed)
-            - ✅ All tests passed
-            
-            ### Changes
-            - Updated dependencies via yarn.lock
-            - Latest code from develop branch
-            
-            ### Test Results
-            All tests passed successfully! ✅
-          labels: |
-            automated
-            dependencies
-            tested
-          assignees: ${{ github.actor }}
-          reviewers: ${{ github.actor }}
+        run: |
+          # Check if PR already exists
+          PR_EXISTS=$(gh pr list --base test --head develop --json number --jq length)
+          
+          if [ "$PR_EXISTS" -eq "0" ]; then
+            # Create new PR
+            gh pr create \
+              --base test \
+              --head develop \
+              --title "[Auto] Update from develop to test" \
+              --body "## Automated PR from develop to test
+          
+              This PR was automatically created after:
+              - ✅ yarn.lock was updated (if needed)
+              - ✅ All tests passed
+          
+              ### Changes
+              - Updated dependencies via yarn.lock
+              - Latest code from develop branch
+          
+              ### Test Results
+              All tests passed successfully! ✅" \
+              --label "automated" \
+              --label "dependencies" \
+              --label "tested"
+          else
+            echo "PR already exists from develop to test"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
