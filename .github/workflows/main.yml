@@ -1,0 +1,78 @@
+name: Update Yarn Lock and Create PR
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  update-test-and-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0  # Fetch all history for all branches
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'yarn'
+
+      - name: Update yarn.lock
+        run: yarn install
+
+      - name: Commit changes if any
+        id: commit_changes
+        run: |
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          
+          if git diff --quiet yarn.lock; then
+            echo "No changes to yarn.lock"
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            git add yarn.lock
+            git commit -m "chore: update yarn.lock [skip ci]"
+            git push
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build project
+        run: yarn build
+
+      - name: Run all tests
+        run: yarn test
+        env:
+          NODE_ENV: test
+          DATABASE_URL: 'mongodb://test:test@localhost:27017/test'
+          RABBITMQ_URL: 'amqp://localhost'
+
+      - name: Create Pull Request
+        if: success()
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: develop
+          base: test
+          title: '[Auto] Update from develop to test'
+          body: |
+            ## Automated PR from develop to test
+            
+            This PR was automatically created after:
+            - ✅ yarn.lock was updated (if needed)
+            - ✅ All tests passed
+            
+            ### Changes
+            - Updated dependencies via yarn.lock
+            - Latest code from develop branch
+            
+            ### Test Results
+            All tests passed successfully! ✅
+          labels: |
+            automated
+            dependencies
+            tested
+          assignees: ${{ github.actor }}
+          reviewers: ${{ github.actor }}
