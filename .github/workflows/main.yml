@@ -45,6 +45,17 @@ jobs:
 
       - name: Build project
         run: yarn build
+        env:
+          NODE_ENV: test
+          DATABASE_URL: 'mongodb://test:test@localhost:27017/test'
+          RABBITMQ_URL: 'amqp://localhost'
+          RABBITMQ_URL_AWS: 'amqp://localhost'  # Add this!
+          # Add any other environment variables your tests need
+          APP_AWS_BUCKET_NAME: 'test-bucket'
+          APP_AWS_REGION: 'us-east-1'
+          APP_AWS_ACCESS_KEY: 'test-key'
+          APP_AWS_SECRET_KEY: 'test-secret'
+          GOOGLE_APP_PASSWORD: 'testPass'
 
       - name: Run all tests
         run: yarn test
