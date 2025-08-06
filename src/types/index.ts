@@ -54,9 +54,9 @@ export interface IShopifyWebhookMessagePayloadContent {
 }
 
 export interface IMerchant {
-    id: string;
+    id?: string;
     shopId: string;
-    domains?: object;
+    domains?: string;
     currencyCode: string;
     email: string;
     name: string;
@@ -70,6 +70,12 @@ export interface IReview {
     id?: string;
     merchantBusinessId: string;
     merchantId: string;
+    shopId: string;
+    customerEmail?: string;
+    customerPhone?: string;
+    customerName?: string;
+    verified: boolean;
+    replies?: object;
     items: IReviewItem[];
     result: IReviewResult[];
     status: 'Pending' | 'Completed' | 'Failed';
@@ -89,3 +95,8 @@ export interface IUploadedMediaObject {
     id: string;
     mediaURL: string;
 }
+
+type dataType = string;
+type errorType = string;
+
+export type responseType = dataType | errorType;

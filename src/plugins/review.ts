@@ -56,6 +56,11 @@ const getReviewById = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => 
                 // Explicitly select fields (excludes otpSecret)
                 id: true,
                 merchantId: true,
+                shopId: true,
+                merchantBusinessId: true,
+                verified: true,
+                replies: true,
+                customerName: true,
                 items: true,
                 status: true,
                 result: true,
@@ -78,7 +83,9 @@ const updateReviewById = async (request: Hapi.Request, h: Hapi.ResponseToolkit) 
     const { reviewId } = request.params;
     const reviewUpdate = request.payload as any;
     const { prisma } = request.server.app;
-    delete reviewUpdate.id;
+    if (reviewUpdate){
+        if (Object.keys(reviewUpdate).length === 0) throw Error('Update data missing');
+    }
     try {
         const updatedReview = await prisma.reviews.update({
             where: {
@@ -102,8 +109,6 @@ const updateReviewById = async (request: Hapi.Request, h: Hapi.ResponseToolkit) 
 const listReviewsByMerchantId = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
     const { shopid } = request.query as any;
     const { prisma } = request.server.app;
-    if (!shopid) return;
-    console.log("['info'] listReviewsByMerchantId", shopid);
     try {
         const reviews = await prisma.reviews.findMany({
             where: {
@@ -114,6 +119,10 @@ const listReviewsByMerchantId = async (request: Hapi.Request, h: Hapi.ResponseTo
                 id: true,
                 merchantId: true,
                 shopId: true,
+                merchantBusinessId: true,
+                verified: true,
+                replies: true,
+                customerName: true,
                 items: true,
                 status: true,
                 result: true,
