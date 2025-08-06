@@ -57,6 +57,13 @@ jobs:
           APP_AWS_SECRET_KEY: 'test-secret'
           GOOGLE_APP_PASSWORD: 'testPass'
 
+      - name: Run all tests
+        run: yarn test
+        env:
+          NODE_ENV: test
+          DATABASE_URL: 'mongodb://test:test@localhost:27017/test'
+          RABBITMQ_URL: 'amqp://localhost'
+
       - name: Create Pull Request to test branch
         if: success()
         run: |
