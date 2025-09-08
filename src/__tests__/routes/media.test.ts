@@ -19,7 +19,7 @@ describe('Media routes', () => {
             const res = await server.inject({
                 method: 'POST',
                 url: '/api/v1/media',
-                payload: 'test'
+                payload: 'test',
             });
 
             // Just check it responds (will be 500 without proper setup)
@@ -33,7 +33,7 @@ describe('Media routes', () => {
             const res = await server.inject({
                 method: 'DELETE',
                 url: '/api/v1/media/test',
-                payload: { mediaUrl: 'https://example.com/test.jpg' }
+                payload: { mediaUrl: 'https://example.com/test.jpg' },
             });
 
             // Just check it responds

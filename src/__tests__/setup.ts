@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { createMockConnection } from './mocks/rabbitmq';
-import {prismaMock} from "./mocks/prisma";
+import { prismaMock } from './mocks/prisma';
 
 // Mock environment variables FIRST, before any imports
 process.env.NODE_ENV = 'test';
@@ -17,7 +17,7 @@ jest.setTimeout(10000);
 
 // Mock Prisma
 jest.mock('@prisma/client', () => ({
-    PrismaClient: jest.fn(() => prismaMock)
+    PrismaClient: jest.fn(() => prismaMock),
 }));
 
 // Mock external services by default
