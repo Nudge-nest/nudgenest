@@ -2,6 +2,9 @@
 import Hapi from '@hapi/hapi';
 
 import * as dotenv from 'dotenv';
+import { eventType, IMerchant, IRabbitDataObject, IReviewMessagePayloadContent } from '../types';
+import { isRabbitReviewRequestMessageValid, sampleMessaging } from '../messagesSchema';
+import { messagingExchange } from './nudgeEventBus';
 
 dotenv.config();
 
@@ -127,13 +130,13 @@ export const defaultConfigs = {
 };
 
 const verifyMerchantHandler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-    const { merchantPlatformId } = request.params;
+    const { merchantPlatformId } = request.params as { merchantPlatformId: string };
     const { prisma } = request.server.app;
     try {
         const merchant = await prisma.merchants.findMany({
             where: {
                 shopId: {
-                    contains: merchantPlatformId as string,
+                    contains: merchantPlatformId,
                 },
             },
             select: {
@@ -159,17 +162,91 @@ const verifyMerchantHandler = async (request: Hapi.Request, h: Hapi.ResponseTool
     }
 };
 
+export const convertObjectToBuffer = (objectToConvert: object) => {
+    return Buffer.from(JSON.stringify(objectToConvert));
+};
+
+export const createMerchantEmailMessagingTemplate = (
+    merchant: any,
+    sampleMessaging: IRabbitDataObject<IReviewMessagePayloadContent>,
+    eventType: eventType
+) => {
+    return {
+        ...sampleMessaging,
+        eventType: eventType,
+        payload: {
+            ...sampleMessaging.payload,
+            content: {
+                ...sampleMessaging.payload.content,
+                userName: merchant.name,
+                type: eventType,
+                email: merchant.email,
+                order_number: undefined,
+            },
+            context: { ...sampleMessaging.payload.context, receiver: ['reviewee'] },
+        },
+    } as IRabbitDataObject<IReviewMessagePayloadContent>;
+};
+
+const createRegistrationEmailMessaging = (
+    merchant: any,
+    sampleMessaging: IRabbitDataObject<IReviewMessagePayloadContent>
+) => {
+    return {
+        ...sampleMessaging,
+        eventType: 'merchant-welcome',
+        payload: {
+            ...sampleMessaging.payload,
+            content: {
+                ...sampleMessaging.payload.content,
+                userName: merchant.name,
+                type: 'merchant-welcome',
+                email: merchant.email,
+                order_number: undefined,
+            },
+            context: { ...sampleMessaging.payload.context, receiver: ['reviewee'] },
+        },
+    } as IRabbitDataObject<IReviewMessagePayloadContent>;
+};
+
+const createVerificationEmailMessaging = (
+    merchant: any,
+    sampleMessaging: IRabbitDataObject<IReviewMessagePayloadContent>
+) => {
+    return {
+        ...sampleMessaging,
+        eventType: 'merchant-verification',
+        payload: {
+            ...sampleMessaging.payload,
+            content: {
+                ...sampleMessaging.payload.content,
+                userName: merchant.name,
+                type: 'merchant-verification',
+                email: merchant.email,
+                order_number: undefined,
+            },
+            context: { ...sampleMessaging.payload.context, receiver: ['reviewee'] },
+        },
+    } as IRabbitDataObject<IReviewMessagePayloadContent>;
+};
+
 const createMerchantHandler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
     const merchantData = request.payload;
-    const { prisma } = request.server.app;
+    const { prisma, rabbit } = request.server.app;
+    const { messagingChannel } = rabbit;
     try {
         const merchant = await prisma.merchants.create({
             data: merchantData as any,
         });
         const reviewConfigs = await prisma.configurations.create({
-            data: defaultConfigs as any,
+            data: { ...defaultConfigs, merchantId: merchant.id } as any,
         });
-        //Send Registration message to Merchant
+        const merchantMessageContent = createRegistrationEmailMessaging(merchant, sampleMessaging);
+        const merchantVerificationMessageContent = createVerificationEmailMessaging(merchant, sampleMessaging);
+        if (!isRabbitReviewRequestMessageValid(merchantMessageContent))
+            throw new Error('Invalid messaging data to publish');
+        messagingChannel.publish(messagingExchange, '', convertObjectToBuffer(merchantMessageContent));
+        messagingChannel.publish(messagingExchange, '', convertObjectToBuffer(merchantVerificationMessageContent));
         return h.response({ version: '1.0.0', data: { merchant, reviewConfigs } }).code(200);
     } catch (error: any) {
         return h

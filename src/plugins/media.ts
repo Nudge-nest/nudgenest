@@ -158,7 +158,6 @@ const uploadMediaToS3Handler = async (request: Hapi.Request, h: Hapi.ResponseToo
 const deleteMediaFromS3Handler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
     const { mediaUrl } = request.payload as { mediaUrl: string };
     try {
-
         // Extract S3 key from URL
         // URL format: https://nudge-nest-media.s3.eu-north-1.amazonaws.com/2/1753094603049_33cf89fe_0.jpg
         // Key should be: 2/1753094603049_33cf89fe_0.jpg
@@ -178,7 +177,6 @@ const deleteMediaFromS3Handler = async (request: Hapi.Request, h: Hapi.ResponseT
 
         // Extract the S3 key (everything after the bucket URL)
         const s3Key = mediaUrl.replace(expectedPrefix, '');
-
 
         // Validate the key format (should start with merchantId/)
         if (!s3Key.includes('/')) {

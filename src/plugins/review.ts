@@ -2,6 +2,11 @@
 import Hapi from '@hapi/hapi';
 
 import * as dotenv from 'dotenv';
+import { eventType, IRabbitDataObject, IReviewMessagePayloadContent } from '../types';
+import { convertObjectToBuffer, createMerchantEmailMessagingTemplate } from './merchant';
+import { isRabbitReviewRequestMessageValid, sampleMessaging } from '../messagesSchema';
+import { getMerchantWithBusinessInfo } from '../utils/reviews';
+import { messagingExchange } from './nudgeEventBus';
 
 dotenv.config();
 
@@ -79,11 +84,36 @@ const getReviewById = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => 
     }
 };
 
+//TODo: Add order Number to review schema and everywhere
+
+export const createReviewEmailMessagingTemplate = (
+    review: any,
+    sampleMessaging: IRabbitDataObject<IReviewMessagePayloadContent>,
+    eventType: eventType
+) => {
+    return {
+        ...sampleMessaging,
+        eventType: eventType,
+        payload: {
+            ...sampleMessaging.payload,
+            content: {
+                ...sampleMessaging.payload.content,
+                userName: review.customerName,
+                type: eventType,
+                email: review.customerEmail,
+                order_number: undefined,
+            },
+            context: { ...sampleMessaging.payload.context, receiver: ['reviewer'] },
+        },
+    } as IRabbitDataObject<IReviewMessagePayloadContent>;
+};
+
 const updateReviewById = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
     const { reviewId } = request.params;
     const reviewUpdate = request.payload as any;
-    const { prisma } = request.server.app;
-    if (reviewUpdate){
+    const { prisma, rabbit } = request.server.app;
+    const { messagingChannel } = rabbit;
+    if (reviewUpdate) {
         if (Object.keys(reviewUpdate).length === 0) throw Error('Update data missing');
     }
     try {
@@ -93,6 +123,28 @@ const updateReviewById = async (request: Hapi.Request, h: Hapi.ResponseToolkit) 
             },
             data: { ...reviewUpdate },
         });
+        if (reviewUpdate.status === 'Completed' && reviewUpdate.result) {
+            const merchant = await getMerchantWithBusinessInfo(prisma, updatedReview.merchantBusinessId);
+            const completedReviewMessageToReviewee = createMerchantEmailMessagingTemplate(
+                merchant,
+                sampleMessaging,
+                'completed-review-merchant'
+            );
+            const completedReviewMessageToReviewer = createReviewEmailMessagingTemplate(
+                updatedReview,
+                sampleMessaging,
+                'completed-review'
+            );
+            if (
+                !isRabbitReviewRequestMessageValid(completedReviewMessageToReviewee) ||
+                !isRabbitReviewRequestMessageValid(completedReviewMessageToReviewer)
+            )
+                throw new Error('Invalid messaging data to publish');
+            messagingChannel.publish(messagingExchange, '', convertObjectToBuffer(completedReviewMessageToReviewer));
+            messagingChannel.publish(messagingExchange, '', convertObjectToBuffer(completedReviewMessageToReviewee));
+        } else {
+            return;
+        }
         return h.response({ version: '1.0.0', data: updatedReview }).code(200);
     } catch (error: any) {
         return h

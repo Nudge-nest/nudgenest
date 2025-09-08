@@ -10,11 +10,11 @@ declare module '@hapi/hapi' {
 const prismaPlugin: Hapi.Plugin<null> = {
     name: 'prisma',
     register: async (server: Hapi.Server) => {
-        if (process.env.NODE_ENV === 'test'){
+        if (process.env.NODE_ENV === 'test') {
             // Always use the same mock instance
             const { prismaMock } = require('../../src/__tests__/mocks/prisma');
             server.app.prisma = prismaMock;
-        }else{
+        } else {
             server.app.prisma = new PrismaClient({ log: ['error'] });
         }
         console.log("['info'] Prisma client initialized");
