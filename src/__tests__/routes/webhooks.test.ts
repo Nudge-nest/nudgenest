@@ -6,7 +6,7 @@ import { prismaMock } from '../mocks/prisma';
 // Mock the nudgeEventBus module
 jest.mock('plugins/nudgeEventbus', () => ({
     messagingExchange: 'message_exchange',
-}));
+}), { virtual: true });
 
 // Mock the validation and schema functions
 jest.mock('@/messagesSchema', () => ({
