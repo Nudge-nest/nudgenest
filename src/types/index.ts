@@ -3,9 +3,20 @@ export interface IPayload<T> {
     context: {
         action: string;
         details: string;
+        receiver: string[];
     };
     content: T;
 }
+
+export type eventType =
+    | 'new-review'
+    | 'reminder'
+    | 'merchant-welcome'
+    | 'merchant-verification'
+    | 'merchant-deletion'
+    | 'completed-review'
+    | 'new-review-merchant'
+    | 'completed-review-merchant';
 
 export enum EventPriority {
     NORMAL,
@@ -16,7 +27,7 @@ export enum EventPriority {
 export interface IRabbitDataObject<T> {
     messageId: string;
     timestamp: string;
-    eventType: string;
+    eventType: eventType;
     priority: 'NORMAL' | 'MEDIUM' | 'HIGH';
     payload: IPayload<T>;
     metadata: {
@@ -38,12 +49,13 @@ export interface IReviewMessagePayloadContent {
     userName: string;
     type: string;
     email: string;
-    line_items: [];
-    order_number: number;
-    reviewId: string;
+    line_items?: [];
+    order_number?: number;
+    reviewId?: string;
+    currency?: string;
 }
 
-export interface IShopifyWebhookMessagePayloadContent {
+export interface IDataFromShopifyPayload {
     customer: IShopifyCustomer;
     merchant_business_entity_id: string;
     id: string;
@@ -51,6 +63,7 @@ export interface IShopifyWebhookMessagePayloadContent {
     customer_locale: string;
     order_number: number;
     line_items: [];
+    currency: string;
 }
 
 export interface IMerchant {

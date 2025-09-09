@@ -1,5 +1,5 @@
 import { Validator } from 'jsonschema';
-import { IRabbitDataObject, IShopifyWebhookMessagePayloadContent } from './types';
+import { IRabbitDataObject } from './types';
 
 const validator = new Validator();
 
@@ -49,13 +49,14 @@ const schema = {
     },
 };
 
-export const isWebhookDataToPublishValid = (webhookData: IRabbitDataObject<IShopifyWebhookMessagePayloadContent>) => {
+export const isWebhookDataToPublishValid = (webhookData: IRabbitDataObject<any>) => {
     // @ts-ignore
     const result = validator.validate(webhookData, schema);
     return result.errors.length === 0;
 };
 
-export const sampleShopifyWebhook: IRabbitDataObject<IShopifyWebhookMessagePayloadContent> = {
+/*
+export const sampleShopifyWebhook: IRabbitDataObject<any> = {
     messageId: 'uuid-v4-12345',
     timestamp: '2024-12-15T10:34:56Z',
     eventType: 'event.name',
@@ -87,3 +88,4 @@ export const sampleShopifyWebhook: IRabbitDataObject<IShopifyWebhookMessagePaylo
         retries: 0,
     },
 };
+*/

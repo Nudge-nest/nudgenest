@@ -2,7 +2,6 @@ import { Context, createMockContext, MockContext } from '../prismaContext';
 import { IMerchant } from '../../types';
 import { defaultConfigs } from '../../plugins/merchant';
 
-
 export const testMerchant = {
     shopId: 'TESTSH0P1D',
     domains: 'www.test-shopify',
@@ -50,7 +49,7 @@ export async function verifyMerchant(merchantPlatformId: string, ctx: Context): 
 }
 
 const createTestMerchantData = (): IMerchant => {
-    return testMerchant
+    return testMerchant;
 };
 
 describe('Merchants Unit Tests', () => {

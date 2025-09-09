@@ -2,41 +2,19 @@
 import Hapi from '@hapi/hapi';
 
 import * as dotenv from 'dotenv';
-import { shopifyReviewRequestExchange } from './nudgeEventBus';
-import { isWebhookDataToPublishValid, sampleShopifyWebhook } from '../shopifyWebhookSchema';
-import { IRabbitDataObject, IShopifyWebhookMessagePayloadContent } from '../types';
+import { messagingExchange } from './nudgeEventBus';
+
+import {
+    buildPublishJson,
+    createNewReview,
+    extractMessagingContentFromShopifyData,
+    extractShopifyDataForRabbitMessaging,
+    getMerchantWithBusinessInfo,
+} from '../utils/reviews';
+import { isRabbitReviewRequestMessageValid, sampleMessaging } from '../messagesSchema';
+import { convertObjectToBuffer, createMerchantEmailMessagingTemplate } from './merchant';
 
 dotenv.config();
-
-const extractShopifyDataForRabbitMessaging = (payload: any): IShopifyWebhookMessagePayloadContent => {
-    const { customer, merchant_business_entity_id, order_status_url, id, customer_locale, order_number, line_items } =
-        payload;
-    const { id: customerId, first_name, last_name, state, email, phone, verified_email } = customer || {};
-    return {
-        customer: { id: customerId, first_name, last_name, state, email, phone, verified_email },
-        merchant_business_entity_id,
-        order_status_url,
-        id,
-        customer_locale,
-        order_number,
-        line_items,
-    };
-};
-
-const buildPublishJson = (
-    shopifyMessage: IShopifyWebhookMessagePayloadContent
-): IRabbitDataObject<IShopifyWebhookMessagePayloadContent> => ({
-    ...sampleShopifyWebhook,
-    payload: {
-        ...sampleShopifyWebhook.payload,
-        content: shopifyMessage,
-    },
-});
-
-const publishToReviewExchange = (channel: any, publishJson: any) => {
-    const publishBuffer = Buffer.from(JSON.stringify(publishJson));
-    channel.publish(shopifyReviewRequestExchange, '', publishBuffer);
-};
 
 declare module '@hapi/hapi' {
     interface ServerApplicationState {
@@ -62,15 +40,35 @@ const shopifyWebhookPlugin: Hapi.Plugin<null> = {
 };
 
 const webhookMessageHandler = async (request: Hapi.Request, h: Hapi.ResponseToolkit) => {
-    const { shopifyChannel } = request.server.app.rabbit;
+    const { rabbit, prisma } = request.server.app;
+    const { messagingChannel } = rabbit;
     const { customer_locale, order_number } = request.payload as any;
     if (!order_number || !customer_locale) return null;
     try {
-        const shopifyMessage = extractShopifyDataForRabbitMessaging(request.payload);
-        const requestMessagePublishJson = buildPublishJson(shopifyMessage);
-        if (!isWebhookDataToPublishValid(requestMessagePublishJson)) throw new Error('Invalid webhook data to publish');
-        publishToReviewExchange(shopifyChannel, requestMessagePublishJson);
-        return h.response({ version: '1.0.0', message: 'New message published' }).code(200);
+        const reviewDataFromPayload = extractShopifyDataForRabbitMessaging(request.payload);
+        const merchantData = await getMerchantWithBusinessInfo(
+            prisma,
+            reviewDataFromPayload.merchant_business_entity_id
+        );
+        const createNewReviewToDb = await createNewReview(prisma, reviewDataFromPayload, merchantData.id);
+        const reviewMessageContent = extractMessagingContentFromShopifyData(
+            reviewDataFromPayload,
+            createNewReviewToDb.id
+        );
+        const reviewToMessagingChannelJSON = buildPublishJson(reviewMessageContent, sampleMessaging);
+        const reviewMessageToMerchantJSON = createMerchantEmailMessagingTemplate(
+            merchantData,
+            sampleMessaging,
+            'new-review-merchant'
+        );
+        if (
+            !isRabbitReviewRequestMessageValid(reviewToMessagingChannelJSON) ||
+            !isRabbitReviewRequestMessageValid(reviewMessageToMerchantJSON)
+        )
+            throw new Error('Invalid messaging data to publish');
+        messagingChannel.publish(messagingExchange, '', convertObjectToBuffer(reviewToMessagingChannelJSON));
+        messagingChannel.publish(messagingExchange, '', convertObjectToBuffer(reviewMessageToMerchantJSON));
+        return h.response({ version: '1.0.0', message: 'New review processed successfully' }).code(200);
     } catch (error: any) {
         return h
             .response({

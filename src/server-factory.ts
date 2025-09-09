@@ -5,7 +5,6 @@ import * as dotenv from 'dotenv';
 import rabbitPlugin from './plugins/nudgeEventBus';
 import shopifyWebhookPlugin from './plugins/shopifyWebhook';
 import sendReviewMessagePlugin from './plugins/sendReviewMessagePlugin';
-import shopifyReviewRequestListenerPlugin from './plugins/shopifyReviewRequestListener';
 import prismaPlugin from './plugins/prisma';
 import merchantsPlugin from './plugins/merchant';
 import reviewsPlugin from './plugins/review';
@@ -37,7 +36,6 @@ export const createServer = async () => {
         merchantsPlugin,
         reviewsPlugin,
         sendReviewMessagePlugin,
-        shopifyReviewRequestListenerPlugin,
         reviewConfigsPlugin,
         reviewMediaPlugin,
     ]);
