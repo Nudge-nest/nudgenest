@@ -4,7 +4,7 @@ import { Server, ServerInjectResponse } from '@hapi/hapi';
 import { prismaMock } from '../mocks/prisma';
 
 // Mock the nudgeEventBus module
-jest.mock('plugins/nudgeEventbus', () => ({
+jest.mock('src/plugins/nudgeEventbus', () => ({
     messagingExchange: 'message_exchange',
 }), { virtual: true });
 
