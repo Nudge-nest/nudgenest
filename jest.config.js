@@ -19,6 +19,8 @@ module.exports = {
     },
     moduleNameMapper: {
         '^@/(.*)$': '<rootDir>/src/$1',
+        '^plugins/(.*)$': '<rootDir>/src/plugins/$1',
+        '^utils/(.*)$': '<rootDir>/src/utils/$1',
     },
     transformIgnorePatterns: ['node_modules/(?!(@hapi)/)'],
     setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],

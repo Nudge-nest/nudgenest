@@ -4,12 +4,12 @@ import { Server, ServerInjectResponse } from '@hapi/hapi';
 import { prismaMock } from '../mocks/prisma';
 
 // Mock the nudgeEventBus module
-jest.mock('../../plugins/nudgeEventbus', () => ({
+jest.mock('plugins/nudgeEventbus', () => ({
     messagingExchange: 'message_exchange',
 }));
 
 // Mock the validation and schema functions
-jest.mock('../../messagesSchema', () => ({
+jest.mock('@/messagesSchema', () => ({
     isRabbitReviewRequestMessageValid: jest.fn(),
     sampleMessaging: {
         payload: {
@@ -19,7 +19,7 @@ jest.mock('../../messagesSchema', () => ({
 }));
 
 // Mock the utils/reviews functions
-jest.mock('../../utils/reviews', () => ({
+jest.mock('utils/reviews', () => ({
     buildPublishJson: jest.fn(),
     createNewReview: jest.fn(),
     extractMessagingContentFromShopifyData: jest.fn(),
@@ -28,7 +28,7 @@ jest.mock('../../utils/reviews', () => ({
 }));
 
 // Mock the merchant module with the correct structure for Hapi
-jest.mock('../../plugins/merchant', () => ({
+jest.mock('plugins/merchant', () => ({
     // Plugin structure for Hapi (if it's being auto-loaded)
     plugin: {
         name: 'merchant',
